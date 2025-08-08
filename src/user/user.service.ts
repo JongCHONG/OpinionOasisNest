@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -11,19 +16,62 @@ export class UserService {
   ) {}
 
   async create(userData: Partial<User>): Promise<User> {
-    const user = this.userRepository.create(userData);
-    return this.userRepository.save(user);
+    try {
+      const saltRounds = 10;
+      if (userData.password) {
+        userData.password = await bcrypt.hash(userData.password, saltRounds);
+      }
+      const user = this.userRepository.create(userData);
+      return await this.userRepository.save(user);
+    } catch (error) {
+      throw new BadRequestException(
+        "Erreur lors de la création de l'utilisateur",
+      );
+    }
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    try {
+      return await this.userRepository.find();
+    } catch (error) {
+      throw new BadRequestException(
+        'Erreur lors de la récupération des utilisateurs',
+      );
+    }
   }
 
   async findById(id: number): Promise<User> {
-    return this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+    return user;
   }
 
   async findByEmail(email: string): Promise<User> {
-    return this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+    return user;
+  }
+
+  async update(id: number, updateData: Partial<User>): Promise<User> {
+    if (updateData.password) {
+      const saltRounds = 10;
+      updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+    }
+    const result = await this.userRepository.update(id, updateData);
+    if (result.affected === 0) {
+      throw new NotFoundException('Utilisateur à mettre à jour non trouvé');
+    }
+    return this.findById(id);
+  }
+
+  async delete(id: number): Promise<void> {
+    const result = await this.userRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException('Utilisateur à supprimer non trouvé');
+    }
   }
 }
