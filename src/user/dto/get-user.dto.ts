@@ -1,6 +1,6 @@
-import { IsString } from "class-validator";
+import { IsUUID } from "class-validator";
 
 export class GetUserDto {
-  @IsString()
-  nom: string;
+  @IsUUID()
+  id: string;
 }

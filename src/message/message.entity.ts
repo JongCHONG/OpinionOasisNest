@@ -4,25 +4,24 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+import { User } from '../user/user.entity';
 
-@Entity('users')
-export class User {
+@Entity('messages')
+export class Message {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 100 })
-  username: string;
-
-  @Column({ unique: true, length: 255 })
-  email: string;
-
-  @Column({ length: 255 })
-  password: string;
+  @Column('text')
+  text: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => User, user => user.id, { nullable: false })
+  user: User;
 }

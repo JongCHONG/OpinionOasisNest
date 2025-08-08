@@ -13,6 +13,9 @@ import { UserService } from './user.service';
 import { User } from './user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
+import { GetUserDto } from './dto/get-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true }))
 @Controller('users')
@@ -30,21 +33,21 @@ export class UserController {
   }
 
   @Get(':id')
-  async findById(@Param('id') id: number): Promise<User> {
-    return this.userService.findById(id);
+  async findById(@Param() params: GetUserDto): Promise<User> {
+    return this.userService.findById(params.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id')
   async update(
-    @Param('id') id: number,
+    @Param() params: UpdateUserDto,
     @Body() updateData: Partial<User>,
   ): Promise<User> {
-    return this.userService.update(id, updateData);
+    return this.userService.update(params.id, updateData);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    return this.userService.delete(id);
+  async delete(@Param() params: DeleteUserDto): Promise<void> {
+    return this.userService.delete(params.id);
   }
 }

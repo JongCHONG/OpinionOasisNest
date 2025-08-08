@@ -40,7 +40,7 @@ export class UserService {
     }
   }
 
-  async findById(id: number): Promise<User> {
+  async findById(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('Utilisateur non trouvé');
@@ -56,7 +56,7 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateData: Partial<User>): Promise<User> {
+  async update(id: string, updateData: Partial<User>): Promise<User> {
     if (updateData.password) {
       const saltRounds = 10;
       updateData.password = await bcrypt.hash(updateData.password, saltRounds);
@@ -68,7 +68,7 @@ export class UserService {
     return this.findById(id);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const result = await this.userRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException('Utilisateur à supprimer non trouvé');

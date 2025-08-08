@@ -1,8 +1,11 @@
-import { IsString } from "class-validator";
+import { IsString, IsUUID } from "class-validator";
 
 export class UpdateUserDto {
+  @IsUUID()
+  id: string;
+
   @IsString()
-  nom: string;
+  username: string;
 
   @IsString()
   email: string;
