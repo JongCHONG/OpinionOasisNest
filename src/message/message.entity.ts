@@ -23,5 +23,5 @@ export class Message {
   updatedAt: Date;
 
   @ManyToOne(() => User, user => user.id, { nullable: false })
-  user: User;
+  user: string;
 }

@@ -51,7 +51,10 @@ export class UserService {
       return user;
     } catch (error) {
       console.error(error);
-      throw new BadRequestException('Erreur lors de la récupération de l\'utilisateur');
+      if (error instanceof NotFoundException) throw error;
+      throw new BadRequestException(
+        "Erreur lors de la récupération de l'utilisateur",
+      );
     }
   }
 
@@ -64,7 +67,10 @@ export class UserService {
       return user;
     } catch (error) {
       console.error(error);
-      throw new BadRequestException('Erreur lors de la récupération de l\'utilisateur');
+      if (error instanceof NotFoundException) throw error;
+      throw new BadRequestException(
+        "Erreur lors de la récupération de l'utilisateur",
+      );
     }
   }
 
@@ -72,7 +78,10 @@ export class UserService {
     try {
       if (updateData.password) {
         const saltRounds = 10;
-        updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+        updateData.password = await bcrypt.hash(
+          updateData.password,
+          saltRounds,
+        );
       }
       const result = await this.userRepository.update(id, updateData);
       if (result.affected === 0) {
@@ -81,7 +90,10 @@ export class UserService {
       return this.findById(id);
     } catch (error) {
       console.error(error);
-      throw new BadRequestException('Erreur lors de la mise à jour de l\'utilisateur');
+      if (error instanceof NotFoundException) throw error;
+      throw new BadRequestException(
+        "Erreur lors de la mise à jour de l'utilisateur",
+      );
     }
   }
 
@@ -93,7 +105,10 @@ export class UserService {
       }
     } catch (error) {
       console.error(error);
-      throw new BadRequestException('Erreur lors de la suppression de l\'utilisateur');
+      if (error instanceof NotFoundException) throw error;
+      throw new BadRequestException(
+        "Erreur lors de la suppression de l'utilisateur",
+      );
     }
   }
 }
