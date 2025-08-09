@@ -11,6 +11,9 @@ import {
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { Message } from './message.entity';
+import { CreateMessageDto } from './dto/create-messaage.dto';
+import { UpdateMessageDto } from './dto/update-message.dto';
+import { DeleteMessageDto } from './dto/delete-message.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true }))
 @Controller('messages')
@@ -18,7 +21,7 @@ export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Post()
-  async create(@Body() data: Partial<Message>): Promise<Message> {
+  async create(@Body() data: CreateMessageDto): Promise<Message> {
     return this.messageService.create(data);
   }
 
@@ -27,21 +30,16 @@ export class MessageController {
     return this.messageService.findAll();
   }
 
-  @Get(':id')
-  async findById(@Param('id') id: string): Promise<Message> {
-    return this.messageService.findById(id);
-  }
-
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param() params: UpdateMessageDto,
     @Body() updateData: Partial<Message>,
   ): Promise<Message> {
-    return this.messageService.update(id, updateData);
+    return this.messageService.update(params.id, updateData);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
-    return this.messageService.delete(id);
+  async delete(@Param() params: DeleteMessageDto): Promise<void> {
+    return this.messageService.delete(params.id);
   }
 }

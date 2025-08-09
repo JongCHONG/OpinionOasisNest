@@ -24,6 +24,7 @@ export class UserService {
       const user = this.userRepository.create(userData);
       return await this.userRepository.save(user);
     } catch (error) {
+      console.error(error);
       throw new BadRequestException(
         "Erreur lors de la création de l'utilisateur",
       );
@@ -34,6 +35,7 @@ export class UserService {
     try {
       return await this.userRepository.find();
     } catch (error) {
+      console.error(error);
       throw new BadRequestException(
         'Erreur lors de la récupération des utilisateurs',
       );
@@ -41,37 +43,57 @@ export class UserService {
   }
 
   async findById(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
+    try {
+      const user = await this.userRepository.findOne({ where: { id } });
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+      return user;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Erreur lors de la récupération de l\'utilisateur');
     }
-    return user;
   }
 
   async findByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
+    try {
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+      return user;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Erreur lors de la récupération de l\'utilisateur');
     }
-    return user;
   }
 
   async update(id: string, updateData: Partial<User>): Promise<User> {
-    if (updateData.password) {
-      const saltRounds = 10;
-      updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+    try {
+      if (updateData.password) {
+        const saltRounds = 10;
+        updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+      }
+      const result = await this.userRepository.update(id, updateData);
+      if (result.affected === 0) {
+        throw new NotFoundException('Utilisateur à mettre à jour non trouvé');
+      }
+      return this.findById(id);
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Erreur lors de la mise à jour de l\'utilisateur');
     }
-    const result = await this.userRepository.update(id, updateData);
-    if (result.affected === 0) {
-      throw new NotFoundException('Utilisateur à mettre à jour non trouvé');
-    }
-    return this.findById(id);
   }
 
   async delete(id: string): Promise<void> {
-    const result = await this.userRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException('Utilisateur à supprimer non trouvé');
+    try {
+      const result = await this.userRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException('Utilisateur à supprimer non trouvé');
+      }
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Erreur lors de la suppression de l\'utilisateur');
     }
   }
 }

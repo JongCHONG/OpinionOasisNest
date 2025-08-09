@@ -46,6 +46,7 @@ export class UserController {
     return this.userService.update(params.id, updateData);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param() params: DeleteUserDto): Promise<void> {
     return this.userService.delete(params.id);
