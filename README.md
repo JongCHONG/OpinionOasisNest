@@ -1,4 +1,4 @@
-# 🚀 Mon Application NestJS + PostgreSQL
+# 🚀 OpinionOasis NestJS + PostgreSQL
 
 Projet backend réalisé avec [NestJS](https://nestjs.com/) (TypeScript), connecté à une base de données PostgreSQL, démarrable en local via Docker Compose.
 
